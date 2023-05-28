@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33530.505
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoList.Blazor.UI", "TodoListMudBlazorDapper.UI\TodoList.Blazor.UI.csproj", "{E66A6249-0270-42E6-ABD5-DCE6D207469F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoList.DataAccess", "TodoList.DataAccess\TodoList.DataAccess.csproj", "{FCEF8E43-C585-4C63-8D71-7C1B9700145F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E66A6249-0270-42E6-ABD5-DCE6D207469F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E66A6249-0270-42E6-ABD5-DCE6D207469F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E66A6249-0270-42E6-ABD5-DCE6D207469F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E66A6249-0270-42E6-ABD5-DCE6D207469F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCEF8E43-C585-4C63-8D71-7C1B9700145F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCEF8E43-C585-4C63-8D71-7C1B9700145F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCEF8E43-C585-4C63-8D71-7C1B9700145F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCEF8E43-C585-4C63-8D71-7C1B9700145F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {33863994-0E46-4356-A1C4-F4EC8835515C}
+	EndGlobalSection
+EndGlobal

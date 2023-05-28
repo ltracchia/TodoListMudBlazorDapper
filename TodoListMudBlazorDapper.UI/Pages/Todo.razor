@@ -1,0 +1,313 @@
+﻿@page "/todo"
+
+@using TodoList.DataAccess.Data;
+@using TodoList.DataAccess.Models;
+
+@inject ITodoData _db;
+
+<style type="text/css">
+
+    .lmsIcon:hover {
+        cursor: pointer;
+    }
+
+</style>
+
+
+<table>
+    <tr>
+        <td style="padding-right:20px;"><label>Total Tasks: @TodoListCountTotal</label></td>
+        <td style ="padding-right:20px;"><label>Incomplete Tasks: @TodoListCountActive</label></td>
+        <td><label>Completed Tasks: @TodoListCountComplete</label></td>
+    </tr>
+</table>
+
+<MudGrid Class="my-3">
+    <MudItem xs="12">
+        <MudTextField @bind-Value="QuickAdd"
+                      
+                      Placeholder="Type your task then press 'Enter'"
+                      OnKeyUp="((args)=>HandleQuickAddKeyPress(args))"
+                      Variant="Variant.Outlined"
+                      Margin="Margin.Dense"
+                      TextUpdateSuppression="false">
+        </MudTextField>
+    </MudItem>
+</MudGrid>
+
+
+<MudTable Items="@TodosActive"
+          MultiSelection="false"
+          Hover="true"
+          Dense="false"
+          Bordered="false"
+          Striped="true"
+          Loading="@_loading"          
+          LoadingProgressColor="Color.Info"
+          Elevation="0"
+          hidden="@(TodosActive.ToList().Count == 0)">
+    <ToolBarContent>
+        <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>   
+        <MudTh Style="width:50px;"></MudTh>
+        <MudTh Style="width:50px;"></MudTh>
+        <MudTh></MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>   
+        <MudTd>
+            <MudCheckBox T="bool" Checked="context.IsComplete" CheckedChanged="((e)=>MoveToCompleteDB(context))"></MudCheckBox>
+        </MudTd>
+        <MudTd Style="width:50px;">
+            <MudCheckBox T="bool" Disabled="context.IsComplete" Checked="context.IsFavorite" Color="Color.Warning" CheckedChanged="((e)=>UpdateFavorite(context, e))" CheckedIcon="@Icons.Material.Filled.Star" UncheckedIcon="@Icons.Material.Filled.StarOutline"></MudCheckBox>
+        </MudTd>
+        <MudTd DataLabel="Description">@context.Description</MudTd>
+        <MudTd Style="width:50px;">
+            <MudIcon Icon="@Icons.Rounded.Delete" Size="Size.Small" @onclick="(() => DeleteTodo(context))" Class="lmsIcon" />
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+
+<MudExpansionPanel Text="@CompletedTasksPanelTitle" MaxHeight="150" hidden="@(TodosCompleted.ToList().Count == 0)" Style="margin-top:20px;">
+    <MudTable Items="@TodosCompleted"
+                MultiSelection="false"
+                Hover="true"
+                Dense="false"
+                Bordered="false"
+                Striped="true"
+                Loading="@_loading"
+                LoadingProgressColor="Color.Info"
+                Elevation="0"
+              hidden="@(TodosCompleted.ToList().Count == 0)">        
+        <HeaderContent>
+            <MudTh Style="width:50px;"></MudTh>
+            <MudTh Style="width:50px;"></MudTh>
+            <MudTh></MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>
+                <MudCheckBox T="bool" Checked="context.IsComplete" CheckedChanged="((e)=>MoveToActiveDB(context))"></MudCheckBox>
+            </MudTd>
+            <MudTd Style="width:50px;">
+                <MudCheckBox T="bool" Disabled="true" Checked="context.IsFavorite" Color="Color.Warning" CheckedIcon="@Icons.Material.Filled.Star" UncheckedIcon="@Icons.Material.Filled.StarOutline"></MudCheckBox>
+            </MudTd>
+            <MudTd DataLabel="Description" Style="@context.LineThroughCSS">@context.Description</MudTd>
+            <MudTd Style="width:50px;">
+                <MudIcon Icon="@Icons.Rounded.Delete" Size="Size.Small" @onclick="(() => DeleteTodo(context))" Class="lmsIcon" />
+            </MudTd>
+        </RowTemplate>        
+    </MudTable>
+</MudExpansionPanel>    
+
+
+
+@code {
+
+    private bool _loading;
+    private string searchString1 = "";    
+    private string QuickAdd { get; set; } = string.Empty;
+    private string CompletedTasksPanelTitle { get; set; } = "Completed Tasks";
+
+    private IEnumerable<TodoModel> Todos = new List<TodoModel>();
+    private List<TodoModel> TodosActive = new List<TodoModel>();
+    private List<TodoModel> TodosCompleted = new List<TodoModel>();
+
+    private int _todoListCountTotal;
+    private int TodoListCountTotal 
+    { 
+        get 
+        {
+            //return Todos.Count(); 
+            return TodosActive.Count() + TodosCompleted.Count();
+        }
+        set 
+        {
+            _todoListCountTotal = value;
+        }
+    }
+
+    private int _todoListCountActive;
+    private int TodoListCountActive
+    {
+        get
+        {
+            return TodosActive.Count();
+        }
+        set
+        {
+            _todoListCountActive = value;
+        }
+    }
+
+
+    private int _todoListCountComplete;
+    private int TodoListCountComplete
+    {
+        get
+        {
+            return TodosCompleted.Count();
+        }
+        set
+        {
+            _todoListCountComplete = value;
+        }
+    }
+
+    //private async Task Add()
+    //{
+    //    var parameters = new DialogParameters();
+    //    parameters.Add("Task", new TaskModel());
+    //    parameters.Add("Action", "Insert");
+
+    //    var options = new DialogOptions { CloseOnEscapeKey = false };
+    //    var dialog = _dialogService.Show<DlgAddEditTask>("Add New Task", parameters, options);
+    //    var result = await dialog.Result;
+
+    //    if (!result.Cancelled)
+    //    {
+    //        Tasks = await _data.GetByPersonId(1);
+    //        GenerateDueInChips();
+    //    }
+    //}
+
+    protected override async Task OnInitializedAsync()
+    {
+        Todos = await _db.GetTodos();        
+        TodosActive = Todos.Where(x => x.IsComplete == false).ToList();        
+        TodosCompleted = Todos.Where(x => x.IsComplete == true).ToList();           
+
+        CompletedTasksPanelTitle = string.Format("Completed Tasks ({0})", TodosCompleted.Count);
+    }
+
+    private void MoveToCompleteDB(TodoModel todo)
+    {
+        try
+        {
+            todo.IsComplete = true;            
+
+            _db.Update(todo);
+
+            int index = TodosActive.IndexOf(todo);
+            TodosActive[index] = todo;
+
+            if (todo.IsComplete)
+            {                
+                TodosActive.Remove(todo);
+                TodosCompleted.Add(todo);                
+            }
+
+            CompletedTasksPanelTitle = string.Format("Completed Tasks ({0})", TodosCompleted.Count);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    private void MoveToActiveDB(TodoModel todo)
+    {
+        try
+        {
+            todo.IsComplete = false;             
+            _db.Update(todo);
+
+            int index = TodosCompleted.IndexOf(todo);
+            TodosCompleted[index] = todo;
+
+            TodosCompleted.Remove(todo);
+            TodosActive.Add(todo);
+
+            CompletedTasksPanelTitle = string.Format("Completed Tasks ({0})", TodosCompleted.Count);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    private void UpdateFavorite(TodoModel todo, bool isChecked)
+    {
+        try
+        {
+            todo.IsFavorite = isChecked;
+            _db.Update(todo);
+
+            if (isChecked) // move to top of list
+            {
+                TodosActive.Remove(todo);
+                TodosActive.Insert(0, todo);
+            }
+            else
+            {
+                int index = TodosActive.IndexOf(todo);
+                TodosActive[index] = todo;
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    private void DeleteTodo(TodoModel todo)
+    {
+        todo.IsDeleted = true;
+        _db.Update(todo);
+
+        if (!todo.IsComplete) TodosActive.Remove(todo);
+        else TodosCompleted.Remove(todo);
+
+        //TodoListCountTotal = TodoListCountTotal - 1;
+    }
+
+    private void DeleteAllTasks()
+    {
+        TodosActive.Clear();
+    }
+
+    private void HandleQuickAddKeyPress(KeyboardEventArgs args)
+    {
+        try
+        {
+            if (args.Key == "Enter" && !string.IsNullOrWhiteSpace(QuickAdd))
+            {
+                TodoModel todo = new();
+
+                todo.Description = QuickAdd;
+                //todo.IsComplete = false;
+                //todo.IsFavorite = false;
+                //todo.DateCreated = DateTime.Now;
+
+                //await _data.Insert(t);
+                //Tasks = await _data.GetByPersonId(1);
+                //GenerateDueInChips();
+
+                try
+                {
+                    _db.Insert(todo);                    
+                    TodosActive.Add(todo);
+                    //TodoListCountTotal = TodoListCountTotal + 1;
+                    //TodosActive = TodosActive.OrderBy(t => t.DateCreated).ToList();
+                    //TodosActive = TodosActive.Concat(new[] { todo });.OrderByDescending(t => t.DateCreated);
+                    //TodosActive = TodosActive.OrderByDescending(t => t.DateCreated);
+                }
+                catch(Exception ex)
+                {
+                    throw;
+                }                
+
+                QuickAdd = string.Empty;
+
+
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+}
