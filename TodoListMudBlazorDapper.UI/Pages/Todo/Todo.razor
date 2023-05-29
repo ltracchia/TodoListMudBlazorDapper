@@ -2,8 +2,11 @@
 
 @using TodoList.DataAccess.Data;
 @using TodoList.DataAccess.Models;
+@using TodoList.DataAccess.Models;
 
-@inject ITodoData _db;
+@inject ITodoData _dbTodo;
+@inject ITodoListData _dbTodoList;
+
 
 <style type="text/css">
 
@@ -13,19 +16,29 @@
 
 </style>
 
-
-<table>
-    <tr>
-        <td style="padding-right:20px;"><label>Total Tasks: @TodoListCountTotal</label></td>
-        <td style ="padding-right:20px;"><label>Incomplete Tasks: @TodoListCountActive</label></td>
-        <td><label>Completed Tasks: @TodoListCountComplete</label></td>
-    </tr>
-</table>
-
 <MudGrid Class="my-3">
+@*    <MudItem xs="12">
+        <MudTextField @bind-Value="ListName"
+                      Placeholder="Name your list then press 'Enter'"
+                      @onclick="OnListNameClick"
+                      OnKeyUp="((args)=>UpdateListName(args))"
+                      Variant="Variant.Outlined"
+                      Margin="Margin.Dense" 
+                      TextUpdateSuppression="false" 
+                      ReadOnly="@IsListNameReadOnly">
+        </MudTextField>
+    </MudItem>*@
+    <MudItem xs="12">
+        <table>
+            <tr>
+                <td style="padding-right:20px;"><label>Total Tasks: @TodoListCountTotal</label></td>
+                <td style="padding-right:20px;"><label>Incomplete Tasks: @TodoListCountActive</label></td>
+                <td><label>Completed Tasks: @TodoListCountComplete</label></td>
+            </tr>
+        </table>
+    </MudItem>
     <MudItem xs="12">
         <MudTextField @bind-Value="QuickAdd"
-                      
                       Placeholder="Type your task then press 'Enter'"
                       OnKeyUp="((args)=>HandleQuickAddKeyPress(args))"
                       Variant="Variant.Outlined"
@@ -42,20 +55,20 @@
           Dense="false"
           Bordered="false"
           Striped="true"
-          Loading="@_loading"          
+          Loading="@_loading"
           LoadingProgressColor="Color.Info"
           Elevation="0"
           hidden="@(TodosActive.ToList().Count == 0)">
     <ToolBarContent>
         <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"></MudTextField>
     </ToolBarContent>
-    <HeaderContent>   
+    <HeaderContent>
         <MudTh Style="width:50px;"></MudTh>
         <MudTh Style="width:50px;"></MudTh>
         <MudTh></MudTh>
         <MudTh></MudTh>
     </HeaderContent>
-    <RowTemplate>   
+    <RowTemplate>
         <MudTd>
             <MudCheckBox T="bool" Checked="context.IsComplete" CheckedChanged="((e)=>MoveToCompleteDB(context))"></MudCheckBox>
         </MudTd>
@@ -72,15 +85,15 @@
 
 <MudExpansionPanel Text="@CompletedTasksPanelTitle" MaxHeight="150" hidden="@(TodosCompleted.ToList().Count == 0)" Style="margin-top:20px;">
     <MudTable Items="@TodosCompleted"
-                MultiSelection="false"
-                Hover="true"
-                Dense="false"
-                Bordered="false"
-                Striped="true"
-                Loading="@_loading"
-                LoadingProgressColor="Color.Info"
-                Elevation="0"
-              hidden="@(TodosCompleted.ToList().Count == 0)">        
+              MultiSelection="false"
+              Hover="true"
+              Dense="false"
+              Bordered="false"
+              Striped="true"
+              Loading="@_loading"
+              LoadingProgressColor="Color.Info"
+              Elevation="0"
+              hidden="@(TodosCompleted.ToList().Count == 0)">
         <HeaderContent>
             <MudTh Style="width:50px;"></MudTh>
             <MudTh Style="width:50px;"></MudTh>
@@ -98,32 +111,33 @@
             <MudTd Style="width:50px;">
                 <MudIcon Icon="@Icons.Rounded.Delete" Size="Size.Small" @onclick="(() => DeleteTodo(context))" Class="lmsIcon" />
             </MudTd>
-        </RowTemplate>        
+        </RowTemplate>
     </MudTable>
-</MudExpansionPanel>    
+</MudExpansionPanel>
 
 
 
 @code {
 
     private bool _loading;
-    private string searchString1 = "";    
+    private string searchString1 = "";
+    private string ListName { get; set; } = string.Empty;
     private string QuickAdd { get; set; } = string.Empty;
     private string CompletedTasksPanelTitle { get; set; } = "Completed Tasks";
+    //public bool IsListNameReadOnly { get; set; }    
 
     private IEnumerable<TodoModel> Todos = new List<TodoModel>();
     private List<TodoModel> TodosActive = new List<TodoModel>();
     private List<TodoModel> TodosCompleted = new List<TodoModel>();
 
     private int _todoListCountTotal;
-    private int TodoListCountTotal 
-    { 
-        get 
-        {
-            //return Todos.Count(); 
+    private int TodoListCountTotal
+    {
+        get
+        {            
             return TodosActive.Count() + TodosCompleted.Count();
         }
-        set 
+        set
         {
             _todoListCountTotal = value;
         }
@@ -156,47 +170,47 @@
         }
     }
 
-    //private async Task Add()
-    //{
-    //    var parameters = new DialogParameters();
-    //    parameters.Add("Task", new TaskModel());
-    //    parameters.Add("Action", "Insert");
-
-    //    var options = new DialogOptions { CloseOnEscapeKey = false };
-    //    var dialog = _dialogService.Show<DlgAddEditTask>("Add New Task", parameters, options);
-    //    var result = await dialog.Result;
-
-    //    if (!result.Cancelled)
-    //    {
-    //        Tasks = await _data.GetByPersonId(1);
-    //        GenerateDueInChips();
-    //    }
-    //}
 
     protected override async Task OnInitializedAsync()
     {
-        Todos = await _db.GetTodos();        
-        TodosActive = Todos.Where(x => x.IsComplete == false).ToList();        
-        TodosCompleted = Todos.Where(x => x.IsComplete == true).ToList();           
+        Todos = await _dbTodo.GetTodos();
+        TodosActive = Todos.Where(x => x.IsComplete == false).ToList();
+        TodosCompleted = Todos.Where(x => x.IsComplete == true).ToList();
 
         CompletedTasksPanelTitle = string.Format("Completed Tasks ({0})", TodosCompleted.Count);
     }
+
+    //private void OnListNameClick()
+    //{
+    //    IsListNameReadOnly = !IsListNameReadOnly;        
+    //}
+
+    //private void UpdateListName(KeyboardEventArgs args)
+    //{
+    //    if (args.Key == "Enter" && !string.IsNullOrWhiteSpace(ListName))
+    //    {
+    //        TodoListModel todoList = new TodoListModel();
+    //        todoList.Name = ListName;
+    //        _dbTodoList.Insert(todoList);
+    //        IsListNameReadOnly = true;
+    //    }
+    //}
 
     private void MoveToCompleteDB(TodoModel todo)
     {
         try
         {
-            todo.IsComplete = true;            
+            todo.IsComplete = true;
 
-            _db.Update(todo);
+            _dbTodo.Update(todo);
 
             int index = TodosActive.IndexOf(todo);
             TodosActive[index] = todo;
 
             if (todo.IsComplete)
-            {                
+            {
                 TodosActive.Remove(todo);
-                TodosCompleted.Add(todo);                
+                TodosCompleted.Add(todo);
             }
 
             CompletedTasksPanelTitle = string.Format("Completed Tasks ({0})", TodosCompleted.Count);
@@ -211,8 +225,8 @@
     {
         try
         {
-            todo.IsComplete = false;             
-            _db.Update(todo);
+            todo.IsComplete = false;
+            _dbTodo.Update(todo);
 
             int index = TodosCompleted.IndexOf(todo);
             TodosCompleted[index] = todo;
@@ -233,7 +247,7 @@
         try
         {
             todo.IsFavorite = isChecked;
-            _db.Update(todo);
+            _dbTodo.Update(todo);
 
             if (isChecked) // move to top of list
             {
@@ -255,7 +269,7 @@
     private void DeleteTodo(TodoModel todo)
     {
         todo.IsDeleted = true;
-        _db.Update(todo);
+        _dbTodo.Update(todo);
 
         if (!todo.IsComplete) TodosActive.Remove(todo);
         else TodosCompleted.Remove(todo);
@@ -287,17 +301,17 @@
 
                 try
                 {
-                    _db.Insert(todo);                    
+                    _dbTodo.Insert(todo);
                     TodosActive.Add(todo);
                     //TodoListCountTotal = TodoListCountTotal + 1;
                     //TodosActive = TodosActive.OrderBy(t => t.DateCreated).ToList();
                     //TodosActive = TodosActive.Concat(new[] { todo });.OrderByDescending(t => t.DateCreated);
                     //TodosActive = TodosActive.OrderByDescending(t => t.DateCreated);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     throw;
-                }                
+                }
 
                 QuickAdd = string.Empty;
 

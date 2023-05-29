@@ -1,0 +1,46 @@
+﻿@using TodoList.DataAccess.Data;
+@using TodoList.DataAccess.Models;
+@inject ITodoListData _dbTodoList;
+
+<MudDialog Class="pa-3">
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudTextField @bind-Value="TodoList.Name" Label="Name" Required="true" RequiredError="Name is required" Class="py-3" AutoFocus="true" />
+            <MudTextField @bind-Value="TodoList.Description" Label="Description" Class="py-3" />            
+        </MudForm>        
+    </DialogContent>    
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" OnClick="Submit">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public TodoListModel TodoList { get; set; }
+    [Parameter] public string Action { get; set; }
+
+    MudForm form;
+    bool success;
+    string[] errors = { };
+
+    private async Task Submit()
+    {
+        try
+        {
+            if (Action == "Insert") await _dbTodoList.Insert(TodoList);
+            else if (Action == "Update") await _dbTodoList.Update(TodoList);
+
+            //Snackbar.Add("Task Saved", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}

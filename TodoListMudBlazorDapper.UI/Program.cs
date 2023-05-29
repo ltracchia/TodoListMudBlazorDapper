@@ -17,6 +17,8 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddMudServices();
 builder.Services.AddTransient<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddTransient<ITodoData, TodoData>();
+builder.Services.AddTransient<ITodoListData, TodoListData>();
+builder.Services.AddTransient<IProjectData, ProjectData>();
 
 var app = builder.Build();
 

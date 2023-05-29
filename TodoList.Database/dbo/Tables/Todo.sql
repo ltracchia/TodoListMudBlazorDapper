@@ -1,5 +1,6 @@
 ﻿CREATE TABLE [dbo].[Todo] (
     [Id]           INT           IDENTITY (1, 1) NOT NULL,
+    [FkTodoListId] INT           NOT NULL,
     [Description]  VARCHAR (100) NOT NULL,
     [IsComplete]   BIT           CONSTRAINT [DF_Todo_IsComplete] DEFAULT ((0)) NOT NULL,
     [IsFavorite]   BIT           CONSTRAINT [DF_Todo_IsFavorite] DEFAULT ((0)) NOT NULL,

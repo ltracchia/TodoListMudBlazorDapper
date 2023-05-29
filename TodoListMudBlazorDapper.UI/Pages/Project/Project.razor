@@ -1,0 +1,29 @@
+﻿@page "/project"
+@using TodoList.DataAccess.Data;
+@using TodoList.DataAccess.Models;
+
+@inject IProjectData _db;
+
+<h3>Create New Project</h3>
+
+<EditForm OnSubmit="@SaveProject" Model=@NewProject>
+
+    <MudTextField Label="Name" @bind-Value="NewProject.Name" Variant="Variant.Outlined" />
+    <MudTextField Label="Description" @bind-Value="NewProject.Description" Variant="Variant.Outlined" />
+    <br />
+    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Save</MudButton>
+
+</EditForm>
+
+
+@code {
+    //public string Name { get; set; }
+    //public string Description { get; set; }
+    ProjectModel NewProject = new ProjectModel();
+
+    public void SaveProject(EditContext editContext)
+    {
+        _db.Insert(NewProject);
+    }
+}
+
