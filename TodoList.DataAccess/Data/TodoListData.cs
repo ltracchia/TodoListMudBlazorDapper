@@ -17,6 +17,9 @@ namespace TodoList.DataAccess.Data
             _db = db;
         }
 
+        public Task<IEnumerable<TodoListModel>> GetTodoList(int id)
+            => _db.LoadData<TodoListModel, dynamic>(storedProcedure: "dbo.spTodoList_GetById", new { id });
+
         public Task<int> Insert(TodoListModel x)
         {
             try

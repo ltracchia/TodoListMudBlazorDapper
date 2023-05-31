@@ -24,8 +24,8 @@ namespace TodoList.DataAccess.Data
         //    return _db.LoadData<TodoModel, dynamic>(sql, new { });
         //}
 
-        public Task<IEnumerable<TodoModel>> GetTodos()
-            => _db.LoadData<TodoModel, dynamic>(storedProcedure: "dbo.spTodo_GetAll", new { });
+        public Task<IEnumerable<TodoModel>> GetTodos(int todoListId)
+            => _db.LoadData<TodoModel, dynamic>(storedProcedure: "dbo.spTodo_GetAll", new { todoListId });
 
         //public Task Insert(TodoModel x)
         //    => _db.SaveData(storedProcedure: "dbo.spTodo_Insert",

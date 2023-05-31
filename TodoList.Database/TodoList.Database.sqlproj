@@ -73,6 +73,7 @@
     <Build Include="dbo\Stored Procedures\spProject_Insert.sql" />
     <Build Include="dbo\Stored Procedures\spTodoList_Insert.sql" />
     <Build Include="dbo\Stored Procedures\spTodoList_Update.sql" />
+    <Build Include="dbo\Stored Procedures\spTodoList_GetById.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SqlSchemaCompare.scmp" />

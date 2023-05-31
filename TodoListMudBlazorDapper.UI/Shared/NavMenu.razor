@@ -34,7 +34,7 @@
             //Tasks = await _data.GetByPersonId(1);
             //GenerateDueInChips();
 
-            _navigationManager.NavigateTo($"todolist/{result.Data}");
+            _navigationManager.NavigateTo($"todolist/{result.Data}", true);
         }
     }
 

@@ -2,7 +2,6 @@
 
 @using TodoList.DataAccess.Data;
 @using TodoList.DataAccess.Models;
-@using TodoList.DataAccess.Models;
 
 @inject ITodoData _dbTodo;
 @inject ITodoListData _dbTodoList;
@@ -28,6 +27,9 @@
                       ReadOnly="@IsListNameReadOnly">
         </MudTextField>
     </MudItem>*@
+    <MudItem xs="12">
+        <h2>@todoListName</h2>
+    </MudItem>
     <MudItem xs="12">
         <table>
             <tr>
@@ -121,7 +123,7 @@
 
     #region Parameters
 
-    [Parameter] public TodoListModel TodoList { get; set; } 
+    //[Parameter] public TodoListModel TodoList { get; set; } 
     [Parameter] public int Id { get; set; }
 
     #endregion 
@@ -130,6 +132,7 @@
 
     private bool _loading;
     private string searchString1 = "";
+    private string todoListName = "";
 
     #endregion Member Variables 
 
@@ -138,6 +141,7 @@
     private string ListName { get; set; } = string.Empty;
     private string QuickAdd { get; set; } = string.Empty;
     private string CompletedTasksPanelTitle { get; set; } = "Completed Tasks";    
+    private IEnumerable<TodoListModel> TodoList = new List<TodoListModel>();
     private IEnumerable<TodoModel> Todos = new List<TodoModel>();
     private List<TodoModel> TodosActive = new List<TodoModel>();
     private List<TodoModel> TodosCompleted = new List<TodoModel>();
@@ -187,21 +191,31 @@
     #region Lifecycle Methods
 
     protected override async Task OnInitializedAsync()
-    {
-        int newId = Id;
-        Todos = await _dbTodo.GetTodos();
+    {        
+        TodoList = await _dbTodoList.GetTodoList(Id);
+        if (TodoList.Any()) todoListName = TodoList.First().Name;
+
+        Todos = await _dbTodo.GetTodos(Id);        
         TodosActive = Todos.Where(x => x.IsComplete == false).ToList();
         TodosCompleted = Todos.Where(x => x.IsComplete == true).ToList();
 
         CompletedTasksPanelTitle = string.Format("Completed Tasks ({0})", TodosCompleted.Count);
+
+        //StateHasChanged();
     }
+
+    //protected override async Task OnParametersSetAsync()
+    //{
+        
+    //    await OnInitializedAsync();
+    //}
 
     #endregion
 
     #region Private Methods
 
     private void MoveToCompleteDB(TodoModel todo)
-    {
+    {        
         try
         {
             todo.IsComplete = true;
