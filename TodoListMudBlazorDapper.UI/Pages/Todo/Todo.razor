@@ -1,4 +1,4 @@
-﻿@page "/todo"
+﻿@page "/todolist/{id:int}"
 
 @using TodoList.DataAccess.Data;
 @using TodoList.DataAccess.Models;
@@ -119,13 +119,25 @@
 
 @code {
 
+    #region Parameters
+
+    [Parameter] public TodoListModel TodoList { get; set; } 
+    [Parameter] public int Id { get; set; }
+
+    #endregion 
+
+    #region Member Variables
+
     private bool _loading;
     private string searchString1 = "";
+
+    #endregion Member Variables 
+
+    #region Properties
+
     private string ListName { get; set; } = string.Empty;
     private string QuickAdd { get; set; } = string.Empty;
-    private string CompletedTasksPanelTitle { get; set; } = "Completed Tasks";
-    //public bool IsListNameReadOnly { get; set; }    
-
+    private string CompletedTasksPanelTitle { get; set; } = "Completed Tasks";    
     private IEnumerable<TodoModel> Todos = new List<TodoModel>();
     private List<TodoModel> TodosActive = new List<TodoModel>();
     private List<TodoModel> TodosCompleted = new List<TodoModel>();
@@ -170,9 +182,13 @@
         }
     }
 
+    #endregion
+
+    #region Lifecycle Methods
 
     protected override async Task OnInitializedAsync()
     {
+        int newId = Id;
         Todos = await _dbTodo.GetTodos();
         TodosActive = Todos.Where(x => x.IsComplete == false).ToList();
         TodosCompleted = Todos.Where(x => x.IsComplete == true).ToList();
@@ -180,21 +196,9 @@
         CompletedTasksPanelTitle = string.Format("Completed Tasks ({0})", TodosCompleted.Count);
     }
 
-    //private void OnListNameClick()
-    //{
-    //    IsListNameReadOnly = !IsListNameReadOnly;        
-    //}
+    #endregion
 
-    //private void UpdateListName(KeyboardEventArgs args)
-    //{
-    //    if (args.Key == "Enter" && !string.IsNullOrWhiteSpace(ListName))
-    //    {
-    //        TodoListModel todoList = new TodoListModel();
-    //        todoList.Name = ListName;
-    //        _dbTodoList.Insert(todoList);
-    //        IsListNameReadOnly = true;
-    //    }
-    //}
+    #region Private Methods
 
     private void MoveToCompleteDB(TodoModel todo)
     {
@@ -289,7 +293,7 @@
             if (args.Key == "Enter" && !string.IsNullOrWhiteSpace(QuickAdd))
             {
                 TodoModel todo = new();
-
+                todo.TodoListId = Id;
                 todo.Description = QuickAdd;
                 //todo.IsComplete = false;
                 //todo.IsFavorite = false;
@@ -323,5 +327,7 @@
             throw new Exception(ex.Message);
         }
     }
+
+    #endregion Private Methods
 
 }

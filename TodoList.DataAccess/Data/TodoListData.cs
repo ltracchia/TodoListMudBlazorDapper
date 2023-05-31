@@ -17,11 +17,11 @@ namespace TodoList.DataAccess.Data
             _db = db;
         }
 
-        public Task Insert(TodoListModel x)
+        public Task<int> Insert(TodoListModel x)
         {
             try
             {
-                return _db.SaveData(storedProcedure: "dbo.spTodoList_Insert", new { x.Id, x.ProjectId, x.Name, x.Description });
+                return _db.SaveData(storedProcedure: "dbo.spTodoList_Insert", new { x.Name, x.Description });
             }
             catch (Exception ex)
             {

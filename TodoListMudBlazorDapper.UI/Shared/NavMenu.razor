@@ -1,18 +1,24 @@
 ﻿@using TodoList.Blazor.UI.Pages.Dialogs;
 @using TodoList.DataAccess.Models;
 @inject IDialogService _dialogService
+@inject NavigationManager _navigationManager
 
-<MudNavMenu>
+<MudNavMenu @ref="navMenu">
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>    
     <MudNavLink Href="project" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Projects</MudNavLink>
     <MudNavLink Href="todo" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Todo List</MudNavLink>        
     <MudNavLink Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add" OnClick="NewList">New List</MudNavLink>
 </MudNavMenu>
 
+
 @code{
 
+
+    private MudNavMenu navMenu = new MudNavMenu();
+    private int Id;
+
     private async Task NewList()
-    {
+    {        
         var parameters = new DialogParameters();
         parameters.Add("TodoList", new TodoListModel());
         parameters.Add("Action", "Insert");
@@ -21,11 +27,15 @@
         var dialog = _dialogService.Show<DlgAddTodoList>("Add New List", parameters, options);
         var result = await dialog.Result;
 
-        //if (!result.Cancelled)
-        //{
-        //    Tasks = await _data.GetByPersonId(1);
-        //    GenerateDueInChips();
-        //}
+        
+
+        if (!result.Cancelled)
+        {
+            //Tasks = await _data.GetByPersonId(1);
+            //GenerateDueInChips();
+
+            _navigationManager.NavigateTo($"todolist/{result.Data}");
+        }
     }
 
 }

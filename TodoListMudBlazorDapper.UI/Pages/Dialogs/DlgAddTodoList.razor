@@ -30,11 +30,15 @@
     {
         try
         {
-            if (Action == "Insert") await _dbTodoList.Insert(TodoList);
-            else if (Action == "Update") await _dbTodoList.Update(TodoList);
+            int newId = 0;
+            if (Action == "Insert") 
+            {
+                newId = await _dbTodoList.Insert(TodoList);               
+            }
+            //else if (Action == "Update") await _dbTodoList.Update(TodoList);
 
             //Snackbar.Add("Task Saved", Severity.Success);
-            MudDialog.Close(DialogResult.Ok(true));
+            MudDialog.Close(DialogResult.Ok(newId));            
         }
         catch (Exception ex)
         {

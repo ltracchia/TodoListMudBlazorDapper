@@ -4,7 +4,7 @@ namespace TodoList.DataAccess.Data
 {
     public interface ITodoListData
     {
-        Task Insert(TodoListModel x);
+        Task<int> Insert(TodoListModel x);
         Task Update(TodoListModel x);
     }
 }

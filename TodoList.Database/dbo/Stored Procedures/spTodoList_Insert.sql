@@ -5,7 +5,7 @@
 -- =============================================
 CREATE PROCEDURE [dbo].[spTodoList_Insert]
 	
-	@Id int,
+	--@Id int,
 	@ProjectId int = null,
 	@Name varchar(50),
 	@Description varchar(200)
@@ -17,7 +17,10 @@ BEGIN
 	SET NOCOUNT ON;
 
     -- Insert statements for procedure here
-	insert into TodoList (FkProjectId, [Name], [Description]) values (@ProjectId, @Name, @Description)
+	insert into TodoList (FkProjectId, [Name], [Description], DateCreated) values (null, @Name, @Description, getdate())
+
+	select scope_identity() as 'Id'
+
 END
 GO
 

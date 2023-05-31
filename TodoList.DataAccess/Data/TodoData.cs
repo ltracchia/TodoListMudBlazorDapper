@@ -35,7 +35,7 @@ namespace TodoList.DataAccess.Data
         {
             try
             {
-                return _db.SaveData(storedProcedure: "dbo.spTodo_Insert", new { x.Description });                
+                return _db.SaveData(storedProcedure: "dbo.spTodo_Insert", new { x.TodoListId, x.Description });                
             }
             catch(Exception ex)
             {

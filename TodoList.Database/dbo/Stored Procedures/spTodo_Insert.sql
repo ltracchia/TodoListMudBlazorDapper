@@ -3,7 +3,8 @@
 -- Create date: <Create Date,,>
 -- Description:	<Description,,>
 -- =============================================
-CREATE PROCEDURE [dbo].[spTodo_Insert]		
+CREATE PROCEDURE [dbo].[spTodo_Insert]	
+	@TodoListId int,
 	@Description varchar(100)
 
 AS
@@ -13,6 +14,6 @@ BEGIN
 	SET NOCOUNT ON;
 
     -- Insert statements for procedure here
-	insert into Todo ([Description], DateCreated) 
-	values (@Description, getdate())
+	insert into Todo (FkTodoListId, [Description], DateCreated) 
+	values (@TodoListId, @Description, getdate())
 END
