@@ -74,6 +74,9 @@
     <Build Include="dbo\Stored Procedures\spTodoList_Insert.sql" />
     <Build Include="dbo\Stored Procedures\spTodoList_Update.sql" />
     <Build Include="dbo\Stored Procedures\spTodoList_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\spTodoList_GetAll.sql" />
+    <Build Include="dbo\Stored Procedures\spTodoList_Delete.sql" />
+    <Build Include="dbo\Stored Procedures\spTodo_Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SqlSchemaCompare.scmp" />

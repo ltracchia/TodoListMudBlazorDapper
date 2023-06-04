@@ -17,8 +17,14 @@ namespace TodoList.DataAccess.Data
             _db = db;
         }
 
-        public Task<IEnumerable<TodoListModel>> GetTodoList(int id)
-            => _db.LoadData<TodoListModel, dynamic>(storedProcedure: "dbo.spTodoList_GetById", new { id });
+        public Task<IEnumerable<TodoListModel>> GetTodoLists()
+            => _db.LoadData<TodoListModel, dynamic>(storedProcedure: "dbo.spTodoList_GetAll", new {  });
+
+        public async Task<TodoListModel?> GetTodoList(int id)
+        {
+            var results =  await _db.LoadData<TodoListModel, dynamic>(storedProcedure: "dbo.spTodoList_GetById", new { id });
+            return results.FirstOrDefault(); 
+        }            
 
         public Task<int> Insert(TodoListModel x)
         {
@@ -36,7 +42,19 @@ namespace TodoList.DataAccess.Data
         {
             try
             {
-                return _db.SaveData(storedProcedure: "dbo.spTodoList_Update", new { x.Id, x.ProjectId, x.Name, x.Description });
+                return _db.SaveData(storedProcedure: "dbo.spTodoList_Update", new { x.Id, x.ProjectId, x.Name, x.Description, x.IsDeleted });
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public Task Delete(int id)
+        {
+            try
+            {
+                return _db.SaveData(storedProcedure: "dbo.spTodoList_Delete", new { id });
             }
             catch (Exception ex)
             {

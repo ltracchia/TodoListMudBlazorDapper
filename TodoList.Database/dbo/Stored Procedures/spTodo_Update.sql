@@ -5,7 +5,8 @@
 -- =============================================
 CREATE PROCEDURE [dbo].[spTodo_Update]
 	@Id int,
-	@Description varchar(100),
+	@Name varchar(100),
+	@Description varchar(200),
 	@IsComplete bit, 
 	@IsFavorite bit,
 	@IsDeleted bit
@@ -16,5 +17,6 @@ BEGIN
 	--SET NOCOUNT ON;
 
     -- Insert statements for procedure here
-	update Todo set [Description] = @Description, IsComplete = @IsComplete, IsFavorite = @IsFavorite, IsDeleted = @IsDeleted, DateModified = getdate() where Id = @Id
+	update Todo set [Name] = @Name, [Description] = @Description, IsComplete = @IsComplete, IsFavorite = @IsFavorite, IsDeleted = @IsDeleted, DateModified = getdate() where Id = @Id
+
 END

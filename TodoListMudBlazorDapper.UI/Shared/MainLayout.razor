@@ -1,4 +1,9 @@
-﻿@inherits LayoutComponentBase
+﻿@using TodoList.DataAccess.Data;
+@using TodoList.DataAccess.Models;
+@inherits LayoutComponentBase
+
+@inject ITodoListData _dbTodoList;
+@inject NavigationManager _navigationManager
 
 <MudThemeProvider />
 <MudDialogProvider />
@@ -16,16 +21,34 @@
             <MudText Typo="Typo.h6">Task Manager</MudText>                        
         </MudDrawerHeader>
         <NavMenu />
+        @*<MudList Clickable="true" >
+            @foreach(TodoListModel list in TodoLists)
+            {
+                <MudListItem Text="@list.Name" OnClick="(() => OpenList(list))" />
+            }
+        </MudList>*@    
     </MudDrawer>
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.Large" Class="my-16 pt-16">
+        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
             @Body
         </MudContainer>
     </MudMainContent>
 </MudLayout>
 
 @code {
+
     bool _drawerOpen = true;
+    private IEnumerable<TodoListModel> TodoLists = new List<TodoListModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        TodoLists = await _dbTodoList.GetTodoLists();        
+    }
+
+    private void OpenList(TodoListModel list)
+    {
+        _navigationManager.NavigateTo($"todolist/{list.Id}", true);
+    }
 
     void DrawerToggle()
     {

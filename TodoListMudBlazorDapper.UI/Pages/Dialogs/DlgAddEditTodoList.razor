@@ -4,10 +4,16 @@
 
 <MudDialog Class="pa-3">
     <DialogContent>
-        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
-            <MudTextField @bind-Value="TodoList.Name" Label="Name" Required="true" RequiredError="Name is required" Class="py-3" AutoFocus="true" />
+        <MudForm @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudTextField @bind-Value="TodoList.Name" Label="Name" Required="true" RequiredError="Name is required" Class="py-3" AutoFocus="true" MaxLength="20" />
             <MudTextField @bind-Value="TodoList.Description" Label="Description" Class="py-3" />            
-        </MudForm>        
+        </MudForm>  
+        
+@*        <EditForm Model="TodoList" @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudTextField @bind-Value="TodoList.Name" Label="Name" Required="true" RequiredError="Name is required" Class="py-3" AutoFocus="true" MaxLength="20" />
+            <MudTextField @bind-Value="TodoList.Description" Label="Description" Class="py-3" />
+        </EditForm>*@
+
     </DialogContent>    
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
@@ -22,7 +28,6 @@
     [Parameter] public TodoListModel TodoList { get; set; }
     [Parameter] public string Action { get; set; }
 
-    MudForm form;
     bool success;
     string[] errors = { };
 
@@ -34,11 +39,16 @@
             if (Action == "Insert") 
             {
                 newId = await _dbTodoList.Insert(TodoList);               
+                MudDialog.Close(DialogResult.Ok(newId));
             }
-            //else if (Action == "Update") await _dbTodoList.Update(TodoList);
-
+            else if (Action == "Update")
+            {
+                await _dbTodoList.Update(TodoList);
+                MudDialog.Close(DialogResult.Ok(TodoList));
+            }
+            
             //Snackbar.Add("Task Saved", Severity.Success);
-            MudDialog.Close(DialogResult.Ok(newId));            
+                   
         }
         catch (Exception ex)
         {

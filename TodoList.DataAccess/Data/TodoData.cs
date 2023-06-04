@@ -31,35 +31,27 @@ namespace TodoList.DataAccess.Data
         //    => _db.SaveData(storedProcedure: "dbo.spTodo_Insert",
         //    new { x.Description, x.IsComplete, x.IsFavorite });
 
-        public Task Insert(TodoModel x)
+        public Task<int> Insert(TodoModel x)
         {
             try
             {
-                return _db.SaveData(storedProcedure: "dbo.spTodo_Insert", new { x.TodoListId, x.Description });                
+                return _db.SaveData(storedProcedure: "dbo.spTodo_Insert", new { x.Name, x.Description });                
             }
             catch(Exception ex)
             {
                 throw;
             }
-        }
-    
+        }    
 
-        //public Task Update(TodoModel x)
-        //    => _db.SaveData(storedProcedure: "dbo.spTask_Update",
-        //    new { x.Id, x.Description, x.IsComplete, x.IsFavorite });
+        public Task Update(TodoModel x)                 
+            => _db.SaveData(storedProcedure: "dbo.spTodo_Update", 
+            new { x.Id, x.Name, x.Description, x.IsComplete, x.IsFavorite, x.IsDeleted });
+        
 
-        public Task Update(TodoModel x)
-        {
-            try
-            {
-                return _db.SaveData(storedProcedure: "dbo.spTodo_Update", new { x.Id, x.Description, x.IsComplete, x.IsFavorite, x.IsDeleted });
-            }
-            catch(Exception ex)
-            {
-                throw;
-            }
-        }
-    
+        public Task Delete(int id)
+            => _db.SaveData(storedProcedure: "dbo.spTodo_Delete", 
+                new { id });        
+
 
     }
 }

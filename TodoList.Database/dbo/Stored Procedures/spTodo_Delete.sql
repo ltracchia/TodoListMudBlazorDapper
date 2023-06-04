@@ -3,11 +3,9 @@
 -- Create date: <Create Date,,>
 -- Description:	<Description,,>
 -- =============================================
-CREATE PROCEDURE [dbo].[spTodo_Insert]	
-	@TodoListId int,
-	@Name varchar(100),
-	@Description varchar(200)
-
+CREATE PROCEDURE spTodo_Delete
+	-- Add the parameters for the stored procedure here
+	@Id int
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
@@ -15,7 +13,5 @@ BEGIN
 	SET NOCOUNT ON;
 
     -- Insert statements for procedure here
-	insert into Todo (FkTodoListId, [Name], [Description], DateCreated) values (@TodoListId, @Name, @Description, getdate())
-
-	select scope_identity() as 'Id'
+	delete from Todo where Id = @Id
 END

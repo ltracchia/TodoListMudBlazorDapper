@@ -1,33 +1,51 @@
 ﻿@using TodoList.Blazor.UI.Pages.Dialogs;
+@using TodoList.DataAccess.Data;
 @using TodoList.DataAccess.Models;
+@inject ITodoListData _dbTodoList;
 @inject IDialogService _dialogService
 @inject NavigationManager _navigationManager
 
-<MudNavMenu @ref="navMenu">
-    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>    
-    <MudNavLink Href="project" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Projects</MudNavLink>
-    <MudNavLink Href="todo" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Todo List</MudNavLink>        
+<MudNavMenu>
+    @*<MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>*@
+    @*<MudNavLink Href="project" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Projects</MudNavLink>*@
+    @*<MudNavLink Href="todo" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Todo List</MudNavLink>*@
     <MudNavLink Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add" OnClick="NewList">New List</MudNavLink>
+    <hr/>
+
+    @foreach (TodoListModel list in TodoLists)
+    {
+        <MudNavLink Href=@string.Format("todolist/{0}", @list.Id) Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">@list.Name</MudNavLink>
+    }
+
 </MudNavMenu>
 
 
-@code{
+@*@foreach (TodoListModel list in TodoLists)
+{
+    <NavLink href=@string.Format("todolist/{0}", @list.Id)>
+        <span class="oi oi-people" aria-hidden="true">@list.Name</span>
+    </NavLink>
+}*@
 
+@code {
 
-    private MudNavMenu navMenu = new MudNavMenu();
-    private int Id;
+    //private int Id;
+    private IEnumerable<TodoListModel> TodoLists = new List<TodoListModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        TodoLists = await _dbTodoList.GetTodoLists();
+    }
 
     private async Task NewList()
-    {        
+    {
         var parameters = new DialogParameters();
         parameters.Add("TodoList", new TodoListModel());
         parameters.Add("Action", "Insert");
 
-        var options = new DialogOptions { CloseOnEscapeKey = false, MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = _dialogService.Show<DlgAddTodoList>("Add New List", parameters, options);
+        var options = new DialogOptions { CloseOnEscapeKey = true,  MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = _dialogService.Show<DlgAddEditTodoList>("Add New List", parameters, options);
         var result = await dialog.Result;
-
-        
 
         if (!result.Cancelled)
         {
@@ -38,4 +56,4 @@
         }
     }
 
-}
+    }

@@ -1,0 +1,34 @@
+﻿@using TodoList.DataAccess.Data;
+@using TodoList.DataAccess.Models;
+@inject ITodoData _dbTodo;
+
+<MudDialog>   
+    <DialogContent>
+        Are you sure you want to delete this task?
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">No</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Yes</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }   
+
+    [Parameter] public TodoModel Todo { get; set; }    
+
+    void Submit()
+    {
+        try
+        {
+            _dbTodo.Update(Todo);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+    void Cancel() => MudDialog.Cancel();
+}

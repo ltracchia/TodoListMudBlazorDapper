@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public int TodoListId { get; set; }
         public string TodoListName { get; set; }
-        public string TodoName { get; set; }
+        public string Name { get; set; }
         public string Description { get; set; }
         public bool IsFavorite { get; set; }
         public bool IsComplete { get; set; }

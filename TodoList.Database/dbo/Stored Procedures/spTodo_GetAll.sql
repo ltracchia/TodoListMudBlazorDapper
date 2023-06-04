@@ -19,5 +19,5 @@ BEGIN
 	inner join TodoList tl on t.FkTodoListId = tl.Id 
 	where t.IsDeleted = 0 
 	and FkTodoListId = @TodoListId 
-	order by t.DateCreated desc;
+	--order by t.DateCreated desc;
 END

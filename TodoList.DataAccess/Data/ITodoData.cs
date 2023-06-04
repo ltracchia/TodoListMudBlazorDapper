@@ -5,7 +5,8 @@ namespace TodoList.DataAccess.Data
     public interface ITodoData
     {
         Task<IEnumerable<TodoModel>> GetTodos(int todoListId);
-        Task Insert(TodoModel x);
+        Task<int> Insert(TodoModel x);
         Task Update(TodoModel x);
+        Task Delete(int x);
     }
 }
