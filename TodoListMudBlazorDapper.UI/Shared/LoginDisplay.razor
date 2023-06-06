@@ -1,0 +1,18 @@
+﻿<AuthorizeView>
+    <Authorized>        
+        <div style="margin-right:20px;">Hello, @context.User.Identity.Name</div>
+        <a style="color:#fff;" href="Identity/Account/Logout">Logout</a>
+    </Authorized>
+    <NotAuthorized>
+        <a style="color:#fff; margin-right:20px;" href="Identity/Account/Register">Register</a>
+        <a style="color:#fff;" href="Identity/Account/Login">Login</a>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+
+
+@code {
+
+}
