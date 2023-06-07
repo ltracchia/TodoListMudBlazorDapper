@@ -18,6 +18,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using TodoList.DataAccess.Data;
+using TodoList.DataAccess.Models;
 using TodoList.DataAccess.Static;
 
 namespace TodoList.Blazor.UI.Areas.Identity.Pages.Account
@@ -31,6 +33,7 @@ namespace TodoList.Blazor.UI.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IPersonData _personData;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
@@ -38,7 +41,8 @@ namespace TodoList.Blazor.UI.Areas.Identity.Pages.Account
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            IPersonData personData)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -47,6 +51,7 @@ namespace TodoList.Blazor.UI.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _roleManager = roleManager;
+            _personData = personData;
         }
 
         /// <summary>
@@ -73,12 +78,23 @@ namespace TodoList.Blazor.UI.Areas.Identity.Pages.Account
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public class InputModel
-        {
+        {            
+            [Required(ErrorMessage = "First Name is required.")]            
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; }
+
+            [Display(Name = "Last Name")]
+            public string LastName { get; set; }
+
+            [Required(ErrorMessage = "Username is required.")]            
+            [Display(Name = "Username")]
+            public string Username { get; set; }
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "Email is required.")]
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
@@ -87,7 +103,7 @@ namespace TodoList.Blazor.UI.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "Password is required.")]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
@@ -107,11 +123,12 @@ namespace TodoList.Blazor.UI.Areas.Identity.Pages.Account
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
-            if (!await _roleManager.RoleExistsAsync(TDConstants.Role_Admin))
-            {
-                _roleManager.CreateAsync(new IdentityRole(TDConstants.Role_Admin)).GetAwaiter().GetResult();
 
-            }
+            //if (!await _roleManager.RoleExistsAsync(TDConstants.Role_Admin))
+            //{
+            //    _roleManager.CreateAsync(new IdentityRole(TDConstants.Role_Admin)).GetAwaiter().GetResult();
+            //}
+
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
@@ -123,7 +140,7 @@ namespace TodoList.Blazor.UI.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
 
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+                await _userStore.SetUserNameAsync(user, Input.Username, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
@@ -134,6 +151,13 @@ namespace TodoList.Blazor.UI.Areas.Identity.Pages.Account
                     _logger.LogInformation("User created a new account with password.");
 
                     var userId = await _userManager.GetUserIdAsync(user);
+
+                    PersonModel newPerson = new();
+                    newPerson.FirstName =Input.FirstName;
+                    newPerson.LastName = Input.LastName;
+                    newPerson.UserId = userId;
+                    await _personData.Insert(newPerson);
+
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(

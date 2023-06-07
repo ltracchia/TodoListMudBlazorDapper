@@ -425,7 +425,7 @@
         TodosActive.Clear();
     }
 
-    private void HandleQuickAddKeyPress(KeyboardEventArgs args)
+    private async Task HandleQuickAddKeyPress(KeyboardEventArgs args)
     {
         try
         {
@@ -444,7 +444,7 @@
 
                 try
                 {
-                    _dbTodo.Insert(todo);
+                    int newId = await _dbTodo.Insert(todo);
                     TodosActive.Add(todo);
 
                     //TodoListCountTotal = TodoListCountTotal + 1;

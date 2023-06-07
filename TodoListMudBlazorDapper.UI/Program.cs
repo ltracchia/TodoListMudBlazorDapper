@@ -28,6 +28,7 @@ builder.Services.AddTransient<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddTransient<ITodoData, TodoData>();
 builder.Services.AddTransient<ITodoListData, TodoListData>();
 builder.Services.AddTransient<IProjectData, ProjectData>();
+builder.Services.AddTransient<IPersonData, PersonData>();
 
 var app = builder.Build();
 
