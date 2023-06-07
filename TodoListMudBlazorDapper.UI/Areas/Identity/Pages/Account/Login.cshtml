@@ -13,13 +13,19 @@
             <div class="card border-0 shadow rounded-3 my-5" style="background-color:#f1f1f1;">
                 <div class="card-body p-4 p-sm-5">
 
-                    <h5 class="card-title text-center mb-5 fs-5">Sign In To Your Account</h5>
+                    <h5 class="card-title text-center mb-5 fs-5">Sign In To Your Account</h5>                    
 
                     <form id="account" method="post">
-                        <div class="form-floating mb-3">                            
+                        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                        @*<div class="form-floating mb-3">                            
                             <input asp-for="Input.Email" type="email" class="form-control" autocomplete="__away" aria-required="true" placeholder="name@example.com" />
                             <label asp-for="Input.Email" class="form-label">Email</label>
                             <span asp-validation-for="Input.Email" class="text-danger" style="font-size:12px;"></span>
+                        </div>*@
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Username" type="text" class="form-control" autocomplete="__away" aria-required="true" placeholder="Username" />
+                            <label asp-for="Input.Username" class="form-label">Username</label>
+                            <span asp-validation-for="Input.Username" class="text-danger" style="font-size:12px;"></span>
                         </div>
                         <div class="form-floating mb-3">
                             <input asp-for="Input.Password" type="password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />

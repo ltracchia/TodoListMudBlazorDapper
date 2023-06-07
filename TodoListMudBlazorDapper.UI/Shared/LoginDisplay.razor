@@ -1,6 +1,11 @@
-﻿<AuthorizeView>
+﻿@using TodoList.DataAccess.Data;
+@using TodoList.DataAccess.Models;
+@inject IPersonData _dbPersonData;
+
+<AuthorizeView>
     <Authorized>        
-        <div style="margin-right:20px;">Hello, @context.User.Identity.Name</div>
+        @*<div style="margin-right:20px;">Hello, @context.User.Identity.Name</div>*@
+        <div style="margin-right:20px;">Hello @Person.FirstName @Person.LastName!</div>
         <a style="color:#fff;" href="Identity/Account/Logout">Logout</a>
     </Authorized>
     <NotAuthorized>
@@ -14,5 +19,19 @@
 
 
 @code {
+
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationState { get; set; }
+
+    public PersonModel Person { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationState;        
+
+        if(!string.IsNullOrEmpty(authState.User.Identity.Name))
+            Person = await _dbPersonData.GetPersonByUserName(authState.User.Identity.Name);
+
+    }
 
 }

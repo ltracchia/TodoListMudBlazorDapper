@@ -155,7 +155,8 @@ namespace TodoList.Blazor.UI.Areas.Identity.Pages.Account
                     PersonModel newPerson = new();
                     newPerson.FirstName =Input.FirstName;
                     newPerson.LastName = Input.LastName;
-                    newPerson.UserId = userId;
+                    newPerson.UserName = Input.Username;
+                    //newPerson.UserId = userId;
                     await _personData.Insert(newPerson);
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

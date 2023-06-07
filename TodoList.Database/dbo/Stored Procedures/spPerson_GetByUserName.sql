@@ -3,9 +3,8 @@
 -- Create date: <Create Date,,>
 -- Description:	<Description,,>
 -- =============================================
-CREATE PROCEDURE [dbo].[spPerson_Insert]
-	@FirstName varchar(50),
-	@LastName varchar(50),
+CREATE PROCEDURE spPerson_GetByUserName
+	-- Add the parameters for the stored procedure here
 	@UserName nvarchar(256)
 AS
 BEGIN
@@ -14,6 +13,5 @@ BEGIN
 	SET NOCOUNT ON;
 
     -- Insert statements for procedure here
-	insert into Person (FirstName, LastName, UserName, DateCreated) values (@FirstName, @LastName, @UserName, getdate());
-
+	select * from Person where UserName = @UserName;
 END

@@ -86,6 +86,7 @@
     <Build Include="dbo\Tables\AspNetRoles.sql" />
     <Build Include="dbo\Tables\AspNetRoleClaims.sql" />
     <Build Include="dbo\Stored Procedures\spPerson_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\spPerson_GetByUserName.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SqlSchemaCompare.scmp" />
