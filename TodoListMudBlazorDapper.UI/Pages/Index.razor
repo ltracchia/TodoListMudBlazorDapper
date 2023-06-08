@@ -1,11 +1,8 @@
 ﻿@page "/"
 
+@inject NavigationManager _navigationManager;
+
 <PageTitle>Task Manager</PageTitle>
-
-@*<MudText Typo="Typo.h3" GutterBottom="true">Hello, world!</MudText>
-<MudText Class="mb-8">Welcome to your new app, powered by MudBlazor!</MudText>
-<MudAlert Severity="Severity.Normal">You can find documentation and examples on our website here: <MudLink Href="https://mudblazor.com" Typo="Typo.body2" Color="Color.Inherit"><b>www.mudblazor.com</b></MudLink></MudAlert>*@
-
 
 <MudGrid Class="my-3">    
     <MudItem>
@@ -17,13 +14,24 @@
             <tr>
                 <td><MudText Class="mt-8">Welcome to Task Manager! <br /><br /> Click <strong>+ New List</strong> in the left nav menu to get started.</MudText></td>
             </tr>
-        </table>
-
-        @*<MudText Typo="Typo.h4" GutterBottom="true"></MudText>*@
+        </table>        
         
     </MudItem>
 </MudGrid>
 
+@code{
 
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationState { get; set; }
 
-@*<MudAlert Severity="Severity.Normal">You can find documentation and examples on our website here: <MudLink Href="https://mudblazor.com" Typo="Typo.body2" Color="Color.Inherit"><b>www.mudblazor.com</b></MudLink></MudAlert>*@
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationState;
+        if (!authState.User.Identity.IsAuthenticated)
+        {
+            var uri = new Uri(_navigationManager.Uri);
+            _navigationManager.NavigateTo($"identity/account/login?returnUrl={uri.LocalPath}", true);
+        }                
+    }
+}
+

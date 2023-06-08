@@ -362,3 +362,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /TodoList.Database/SqlSchemaCompare.scmp
+/TodoList.DataAccess/Migrations/ApplicationDbContextModelSnapshot.cs
+/TodoList.DataAccess/Migrations/20230605221007_AddIdentity.Designer.cs
+/TodoList.DataAccess/Migrations/20230605221007_AddIdentity.cs

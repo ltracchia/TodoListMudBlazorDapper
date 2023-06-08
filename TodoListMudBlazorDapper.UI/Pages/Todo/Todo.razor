@@ -145,16 +145,18 @@
 
     #region Parameters
 
-    //[Parameter] public TodoListModel TodoList { get; set; }
-    [Parameter] public int Id { get; set; }
+    [Parameter] 
+    public int Id { get; set; }
+
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationState { get; set; }
 
     #endregion
 
     #region Member Variables
 
     private bool _loading;
-    private string searchString1 = "";
-    //private string todoListName = "";
+    private string searchString1 = "";    
 
     #endregion Member Variables
 
@@ -214,6 +216,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationState;
+        if (!authState.User.Identity.IsAuthenticated)
+        {
+            var uri = new Uri(_navigationManager.Uri);
+            _navigationManager.NavigateTo($"identity/account/login?returnUrl={uri.LocalPath}", true);
+        }
+
         TodoList = await _dbTodoList.GetTodoList(Id);
         if (TodoList != null)
         {
@@ -416,7 +425,7 @@
         TodosActive.Clear();
     }
 
-    private void HandleQuickAddKeyPress(KeyboardEventArgs args)
+    private async Task HandleQuickAddKeyPress(KeyboardEventArgs args)
     {
         try
         {
@@ -435,7 +444,7 @@
 
                 try
                 {
-                    _dbTodo.Insert(todo);
+                    int newId = await _dbTodo.Insert(todo);
                     TodosActive.Add(todo);
 
                     //TodoListCountTotal = TodoListCountTotal + 1;
