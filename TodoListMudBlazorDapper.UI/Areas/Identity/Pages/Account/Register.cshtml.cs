@@ -127,8 +127,13 @@ namespace TodoList.Blazor.UI.Areas.Identity.Pages.Account
             if (!await _roleManager.RoleExistsAsync(TDConstants.Role_Admin))
             {
                 //_roleManager.CreateAsync(new IdentityRole(TDConstants.Role_Admin)).GetAwaiter().GetResult();
-                await _roleManager.CreateAsync(new IdentityRole(TDConstants.Role_Admin));
+                await _roleManager.CreateAsync(new IdentityRole(TDConstants.Role_Admin));                
             }
+
+            //if (!await _roleManager.RoleExistsAsync(TDConstants.Role_SuperAdmin))
+            //{
+            //    await _roleManager.CreateAsync(new IdentityRole(TDConstants.Role_SuperAdmin));
+            //}
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }

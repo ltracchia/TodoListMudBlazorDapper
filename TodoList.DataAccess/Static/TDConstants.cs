@@ -8,6 +8,7 @@ namespace TodoList.DataAccess.Static
 {
     public static class TDConstants
     {
+        public const string Role_SuperAdmin = "SuperAdmin";
         public const string Role_Admin = "Admin";
         //public const string Role_Applicant = "Applicant";
         //public const string Role_Student = "Student";
