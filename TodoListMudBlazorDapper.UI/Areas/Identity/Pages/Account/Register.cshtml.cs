@@ -124,10 +124,11 @@ namespace TodoList.Blazor.UI.Areas.Identity.Pages.Account
         {
             ReturnUrl = returnUrl;
 
-            //if (!await _roleManager.RoleExistsAsync(TDConstants.Role_Admin))
-            //{
-            //    _roleManager.CreateAsync(new IdentityRole(TDConstants.Role_Admin)).GetAwaiter().GetResult();
-            //}
+            if (!await _roleManager.RoleExistsAsync(TDConstants.Role_Admin))
+            {
+                //_roleManager.CreateAsync(new IdentityRole(TDConstants.Role_Admin)).GetAwaiter().GetResult();
+                await _roleManager.CreateAsync(new IdentityRole(TDConstants.Role_Admin));
+            }
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
